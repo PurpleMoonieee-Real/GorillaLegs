@@ -5,7 +5,11 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "utilla-edition", "utilla-edition", "{D1CA2CF7-68F0-47F2-A5CD-768C9A51B340}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegsMod", "src\LegsMod.csproj", "{2AFFB7BF-6919-4F2B-955D-61F49DE8CE84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegsModUtilla", "utilla-edition\LegsModUtilla.csproj", "{A0F8E126-AFA6-4B43-9264-613156385654}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,11 +33,24 @@ Global
 		{2AFFB7BF-6919-4F2B-955D-61F49DE8CE84}.Release|x64.Build.0 = Release|Any CPU
 		{2AFFB7BF-6919-4F2B-955D-61F49DE8CE84}.Release|x86.ActiveCfg = Release|Any CPU
 		{2AFFB7BF-6919-4F2B-955D-61F49DE8CE84}.Release|x86.Build.0 = Release|Any CPU
+		{A0F8E126-AFA6-4B43-9264-613156385654}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0F8E126-AFA6-4B43-9264-613156385654}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0F8E126-AFA6-4B43-9264-613156385654}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A0F8E126-AFA6-4B43-9264-613156385654}.Debug|x64.Build.0 = Debug|Any CPU
+		{A0F8E126-AFA6-4B43-9264-613156385654}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A0F8E126-AFA6-4B43-9264-613156385654}.Debug|x86.Build.0 = Debug|Any CPU
+		{A0F8E126-AFA6-4B43-9264-613156385654}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0F8E126-AFA6-4B43-9264-613156385654}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0F8E126-AFA6-4B43-9264-613156385654}.Release|x64.ActiveCfg = Release|Any CPU
+		{A0F8E126-AFA6-4B43-9264-613156385654}.Release|x64.Build.0 = Release|Any CPU
+		{A0F8E126-AFA6-4B43-9264-613156385654}.Release|x86.ActiveCfg = Release|Any CPU
+		{A0F8E126-AFA6-4B43-9264-613156385654}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2AFFB7BF-6919-4F2B-955D-61F49DE8CE84} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{A0F8E126-AFA6-4B43-9264-613156385654} = {D1CA2CF7-68F0-47F2-A5CD-768C9A51B340}
 	EndGlobalSection
 EndGlobal
