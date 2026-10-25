@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>LegsMod</AssemblyName>
+    <RootNamespace>ModSidedLegArms</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <InformationalVersion>1.0.0</InformationalVersion>
+    <Company>PurpleMoonieee</Company>
+    <Product>Legs Mod</Product>
+    <GorillaTagDir Condition="'$(GorillaTagDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Gorilla Tag</GorillaTagDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BepInEx"><HintPath>$(GorillaTagDir)\BepInEx\core\BepInEx.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine"><HintPath>$(GorillaTagDir)\Gorilla Tag_Data\Managed\UnityEngine.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(GorillaTagDir)\Gorilla Tag_Data\Managed\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.PhysicsModule"><HintPath>$(GorillaTagDir)\Gorilla Tag_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Assembly-CSharp"><HintPath>$(GorillaTagDir)\Gorilla Tag_Data\Managed\Assembly-CSharp.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="PhotonUnityNetworking"><HintPath>$(GorillaTagDir)\Gorilla Tag_Data\Managed\PhotonUnityNetworking.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="PhotonRealtime"><HintPath>$(GorillaTagDir)\Gorilla Tag_Data\Managed\PhotonRealtime.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Photon3Unity3D"><HintPath>$(GorillaTagDir)\Gorilla Tag_Data\Managed\Photon3Unity3D.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>
