@@ -4,7 +4,7 @@ Give your Gorilla Tag arms a fun, leg-like look! Legs Mod is a BepInEx mod for t
 
 ## Install
 
-1. Download `LegsMod.dll` from the [v1.0.0 release](https://github.com/PurpleMoonieee-Real/GorillaLegs/releases/tag/v1.0.0).
+1. Download `LegsMod.dll` from the [latest release](https://github.com/PurpleMoonieee-Real/GorillaLegs/releases/latest).
 2. Drop it into `Gorilla Tag/BepInEx/plugins/`.
 3. Start Gorilla Tag. BepInEx loads the mod when the game opens.
 
