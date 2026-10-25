@@ -11,11 +11,3 @@ Give your Gorilla Tag arms a fun, leg-like look! 🦵
 ## Playing with others
 
 For mod-sided visuals, everyone needs a compatible build. Cross-client visibility is still being tested, so grab a friend with the mod to check what each of you can see.
-
-## Build
-
-With the .NET SDK, BepInEx 5, and Gorilla Tag installed, run:
-
-```powershell
-dotnet build .\LegsMod.sln -c Release -p:GorillaTagDir="C:\Program Files (x86)\Steam\steamapps\common\Gorilla Tag"
-```
