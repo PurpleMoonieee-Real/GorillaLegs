@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -7,13 +7,17 @@ using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
+using UnityEngine.XR;
 
-[BepInPlugin("purplemoonieee.leg.mod.utilla", "Legs Mod", "1.0.0")]
+[BepInPlugin("purplemoonieee.leg.mod.utilla", "Legs Mod", "1.0.1")]
 [BepInDependency("org.legoandmars.gorillatag.utilla", "1.5.0")]
 public sealed class ModSidedLegArmsPlugin : BaseUnityPlugin
 {
     private void Awake()
     {
+        ConfigEntry<KeyboardShortcut> toggleKey = Config.Bind("General", "ToggleLegsKey",
+            new KeyboardShortcut(KeyCode.F8),
+            new ConfigDescription("Keyboard fallback for toggling leg visuals."));
         ConfigEntry<float> shoulderDrop = Config.Bind("Visuals", "ShoulderDropMeters", 0.35f,
             new ConfigDescription("Move the rendered shoulders and hands down.",
                 new AcceptableValueRange<float>(0f, 0.5f)));
@@ -29,6 +33,7 @@ public sealed class ModSidedLegArmsPlugin : BaseUnityPlugin
             new ConfigDescription("Restore the original rendered hand and shoulder positions near the owned-cosmetics wardrobe and its equip buttons."));
 
         ModSidedLegArmsBehaviour behaviour = gameObject.AddComponent<ModSidedLegArmsBehaviour>();
+        behaviour.ToggleKey = toggleKey;
         behaviour.ShoulderDrop = shoulderDrop;
         behaviour.HandRaise = handRaise;
         behaviour.HandTowardTorso = handTowardTorso;
@@ -44,6 +49,7 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
     private const string PresenceKey = "purplemoonieee_legs_visual_v1";
     private const string LegacyPresenceKey = "codex_legs_visual_v1";
     private const string PresenceValue = "1";
+    private const string DisabledPresenceValue = "0";
     private const float LookupInterval = 1f;
 
     public ConfigEntry<float> ShoulderDrop;
@@ -51,6 +57,7 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
     public ConfigEntry<float> HandTowardTorso;
     public ConfigEntry<bool> AlignHandsAtKeyboard;
     public ConfigEntry<bool> RestoreHandsAtWardrobe;
+    public ConfigEntry<KeyboardShortcut> ToggleKey;
     public ManualLogSource Log;
 
     private readonly Dictionary<VRRig, RigState> states = new Dictionary<VRRig, RigState>();
@@ -62,6 +69,9 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
     private string lastLoggedInteractionTargetCounts;
     private float nextPresenceAttemptTime;
     private bool presenceConfirmed;
+    private bool legsEnabled = true;
+    private bool leftPrimaryButtonWasPressed;
+    private bool wasInModdedLobby;
 
     private sealed class RigState
     {
@@ -80,13 +90,16 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
+        wasInModdedLobby = false;
         presenceConfirmed = false;
         nextPresenceAttemptTime = 0f;
-        AnnouncePresence();
+        if (legsEnabled)
+            AnnouncePresence();
     }
 
     public override void OnLeftRoom()
     {
+        wasInModdedLobby = false;
         presenceConfirmed = false;
         nextPresenceAttemptTime = 0f;
         RestoreAllRigs();
@@ -129,13 +142,52 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        if (PhotonNetwork.InRoom)
+        if (legsEnabled && PhotonNetwork.InRoom)
             AnnouncePresence();
+    }
+
+    private void Update()
+    {
+        bool keyboardToggle = ToggleKey != null && ToggleKey.Value.IsDown();
+        bool leftPrimaryPressed = false;
+        InputDevice leftHand = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+        bool hasLeftPrimaryState = leftHand.isValid
+            && leftHand.TryGetFeatureValue(CommonUsages.primaryButton, out leftPrimaryPressed);
+        bool controllerToggle = hasLeftPrimaryState && leftPrimaryPressed && !leftPrimaryButtonWasPressed;
+        leftPrimaryButtonWasPressed = hasLeftPrimaryState && leftPrimaryPressed;
+
+        if (!keyboardToggle && !controllerToggle)
+            return;
+
+        legsEnabled = !legsEnabled;
+        if (legsEnabled)
+            PublishPresence(true);
+        else
+        {
+            PublishPresence(false);
+            RestoreAllRigs();
+        }
+
+        if (Log != null)
+            Log.LogInfo("Leg visuals " + (legsEnabled ? "enabled" : "disabled")
+                + ". Toggle with the left controller primary button or the configured keyboard key.");
     }
 
     private void LateUpdate()
     {
         if (!IsInUtillaModdedLobby())
+        {
+            if (wasInModdedLobby)
+                PublishPresence(false);
+            wasInModdedLobby = false;
+            RestoreAllRigs();
+            RemoveDestroyedRigStates();
+            return;
+        }
+
+        wasInModdedLobby = true;
+
+        if (!legsEnabled)
         {
             RestoreAllRigs();
             RemoveDestroyedRigStates();
@@ -191,7 +243,7 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
 
     private void AnnouncePresence()
     {
-        if (!IsInUtillaModdedLobby())
+        if (!legsEnabled || !IsPresenceRoomAllowed())
             return;
 
         Player localPlayer = PhotonNetwork.LocalPlayer;
@@ -204,29 +256,37 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
             return;
         }
 
-        nextPresenceAttemptTime = Time.unscaledTime + 5f;
-
-        Hashtable properties = new Hashtable
-        {
-            [PresenceKey] = PresenceValue,
-            [LegacyPresenceKey] = PresenceValue
-        };
-        localPlayer.SetCustomProperties(properties);
-        if (Log != null)
-            Log.LogInfo("Published current and legacy cosmetic presence markers.");
+        PublishPresence(true);
     }
 
-    private static bool HasPresenceMarker(Player player)
+    private void PublishPresence(bool enabled)
     {
-        if (player == null || player.CustomProperties == null)
-            return false;
+        if (!PhotonNetwork.InRoom || (enabled && !IsPresenceRoomAllowed()))
+            return;
 
-        object value = player.CustomProperties[PresenceKey];
-        if (value is string && (string)value == PresenceValue)
-            return true;
+        Player localPlayer = PhotonNetwork.LocalPlayer;
+        if (localPlayer == null || (!enabled && !HasPresenceMarker(localPlayer)))
+            return;
 
-        value = player.CustomProperties[LegacyPresenceKey];
-        return value is string && (string)value == PresenceValue;
+        presenceConfirmed = false;
+        nextPresenceAttemptTime = enabled ? Time.unscaledTime + 5f : 0f;
+        string value = enabled ? PresenceValue : DisabledPresenceValue;
+        Hashtable properties = new Hashtable
+        {
+            [PresenceKey] = value,
+            [LegacyPresenceKey] = value
+        };
+        localPlayer.SetCustomProperties(properties);
+
+        if (Log != null)
+            Log.LogInfo(enabled
+                ? "Published current and legacy cosmetic presence markers."
+                : "Disabled current and legacy cosmetic presence markers.");
+    }
+
+    private static bool IsPresenceRoomAllowed()
+    {
+        return IsInUtillaModdedLobby();
     }
 
     private static bool IsInUtillaModdedLobby()
@@ -241,6 +301,19 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
 
         return gameMode is string
             && ((string)gameMode).StartsWith("MODDED_", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool HasPresenceMarker(Player player)
+    {
+        if (player == null || player.CustomProperties == null)
+            return false;
+
+        object value = player.CustomProperties[PresenceKey];
+        if (value is string && (string)value == PresenceValue)
+            return true;
+
+        value = player.CustomProperties[LegacyPresenceKey];
+        return value is string && (string)value == PresenceValue;
     }
 
     private void ApplyToRig(VRRig rig)
