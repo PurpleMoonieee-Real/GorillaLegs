@@ -8,14 +8,16 @@ using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.XR;
 
-[BepInPlugin("purplemoonieee.leg.mod", "Legs Mod", "1.0.1")]
+[BepInPlugin("purplemoonieee.leg.mod", "Legs Mod", "1.0.2")]
 public sealed class ModSidedLegArmsPlugin : BaseUnityPlugin
 {
     private void Awake()
     {
+#if !LEGS_ALWAYS_ON
         ConfigEntry<KeyboardShortcut> toggleKey = Config.Bind("General", "ToggleLegsKey",
             new KeyboardShortcut(KeyCode.F8),
             new ConfigDescription("Keyboard fallback for toggling leg visuals."));
+#endif
         ConfigEntry<float> shoulderDrop = Config.Bind("Visuals", "ShoulderDropMeters", 0.35f,
             new ConfigDescription("Move the rendered shoulders and hands down.",
                 new AcceptableValueRange<float>(0f, 0.5f)));
@@ -31,7 +33,9 @@ public sealed class ModSidedLegArmsPlugin : BaseUnityPlugin
             new ConfigDescription("Restore the original rendered hand and shoulder positions near the owned-cosmetics wardrobe and its equip buttons."));
 
         ModSidedLegArmsBehaviour behaviour = gameObject.AddComponent<ModSidedLegArmsBehaviour>();
+#if !LEGS_ALWAYS_ON
         behaviour.ToggleKey = toggleKey;
+#endif
         behaviour.ShoulderDrop = shoulderDrop;
         behaviour.HandRaise = handRaise;
         behaviour.HandTowardTorso = handTowardTorso;
@@ -55,7 +59,9 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
     public ConfigEntry<float> HandTowardTorso;
     public ConfigEntry<bool> AlignHandsAtKeyboard;
     public ConfigEntry<bool> RestoreHandsAtWardrobe;
+#if !LEGS_ALWAYS_ON
     public ConfigEntry<KeyboardShortcut> ToggleKey;
+#endif
     public ManualLogSource Log;
 
     private readonly Dictionary<VRRig, RigState> states = new Dictionary<VRRig, RigState>();
@@ -68,7 +74,10 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
     private float nextPresenceAttemptTime;
     private bool presenceConfirmed;
     private bool legsEnabled = true;
+#if !LEGS_ALWAYS_ON
     private bool leftPrimaryButtonWasPressed;
+    private bool loggedToggleInputDiagnostic;
+#endif
 
     private sealed class RigState
     {
@@ -141,6 +150,7 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
             AnnouncePresence();
     }
 
+#if !LEGS_ALWAYS_ON
     private void Update()
     {
         bool keyboardToggle = ToggleKey != null && ToggleKey.Value.IsDown();
@@ -150,8 +160,18 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
             && leftHand.TryGetFeatureValue(CommonUsages.primaryButton, out leftPrimaryPressed);
         bool controllerToggle = hasLeftPrimaryState && leftPrimaryPressed && !leftPrimaryButtonWasPressed;
         leftPrimaryButtonWasPressed = hasLeftPrimaryState && leftPrimaryPressed;
+        bool joystickXToggle = Input.GetKeyDown(KeyCode.JoystickButton2);
 
-        if (!keyboardToggle && !controllerToggle)
+        if (!loggedToggleInputDiagnostic && Log != null && Time.unscaledTime >= 3f)
+        {
+            string[] joystickNames = Input.GetJoystickNames();
+            Log.LogInfo("Toggle input diagnostics: left XR device valid=" + leftHand.isValid
+                + ", name=" + leftHand.name + ", primary supported=" + hasLeftPrimaryState
+                + ", legacy joysticks=" + string.Join(", ", joystickNames) + ".");
+            loggedToggleInputDiagnostic = true;
+        }
+
+        if (!keyboardToggle && !controllerToggle && !joystickXToggle)
             return;
 
         legsEnabled = !legsEnabled;
@@ -167,6 +187,7 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
             Log.LogInfo("Leg visuals " + (legsEnabled ? "enabled" : "disabled")
                 + ". Toggle with the left controller primary button or the configured keyboard key.");
     }
+#endif
 
     private void LateUpdate()
     {

@@ -1,9 +1,7 @@
-# Legs Mod v1.0.1
+# Legs Mod v1.0.2
 
-Toggle the leg look with the primary button on the left VR controller, usually X, or F8 on keyboard by default. The keyboard shortcut can be changed in the BepInEx config.
+Fixed controller toggling for OpenVR by adding a legacy input fallback for left X. F8 remains the default keyboard shortcut.
 
-The multiplayer presence markers stay compatible with version 1.0.0, so both versions can recognize each other's leg visuals.
+Includes Toggle and Always On builds, each with standard and Utilla options. Utilla builds require Utilla 1.5.0 or newer and only work in modded gamemodes.
 
-The release includes a separate Utilla edition. It requires Utilla 1.5.0 or newer and only moves rigs in Utilla modded gamemodes. Install one edition at a time.
-
-Multiplayer visibility is still being tested. Compatible builds are needed for mod-sided visuals.
+The multiplayer markers remain compatible with version 1.0.0.
