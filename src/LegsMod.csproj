@@ -4,10 +4,10 @@
     <AssemblyName>LegsMod</AssemblyName>
     <RootNamespace>ModSidedLegArms</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>1.0.2</Version>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
-    <FileVersion>1.0.2.0</FileVersion>
-    <InformationalVersion>1.0.2</InformationalVersion>
+    <Version>1.0.3</Version>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
+    <InformationalVersion>1.0.3</InformationalVersion>
     <Company>PurpleMoonieee</Company>
     <Product>Legs Mod</Product>
     <GorillaTagDir Condition="'$(GorillaTagDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Gorilla Tag</GorillaTagDir>
@@ -17,8 +17,8 @@
     <Reference Include="UnityEngine"><HintPath>$(GorillaTagDir)\Gorilla Tag_Data\Managed\UnityEngine.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine.CoreModule"><HintPath>$(GorillaTagDir)\Gorilla Tag_Data\Managed\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine.PhysicsModule"><HintPath>$(GorillaTagDir)\Gorilla Tag_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="UnityEngine.InputLegacyModule"><HintPath>$(GorillaTagDir)\Gorilla Tag_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine.XRModule"><HintPath>$(GorillaTagDir)\Gorilla Tag_Data\Managed\UnityEngine.XRModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Unity.InputSystem"><HintPath>$(GorillaTagDir)\Gorilla Tag_Data\Managed\Unity.InputSystem.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="Assembly-CSharp"><HintPath>$(GorillaTagDir)\Gorilla Tag_Data\Managed\Assembly-CSharp.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="PhotonUnityNetworking"><HintPath>$(GorillaTagDir)\Gorilla Tag_Data\Managed\PhotonUnityNetworking.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="PhotonRealtime"><HintPath>$(GorillaTagDir)\Gorilla Tag_Data\Managed\PhotonRealtime.dll</HintPath><Private>false</Private></Reference>

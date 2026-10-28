@@ -1,6 +1,6 @@
-# Legs Mod v1.0.2
+# Legs Mod v1.0.3
 
-Fixed controller toggling for OpenVR by adding a legacy input fallback for left X. F8 remains the default keyboard shortcut.
+Fixed the toggle to use Gorilla Tag's active Input System, avoiding the legacy input errors that stopped X and F8 from working.
 
 Includes Toggle and Always On builds, each with standard and Utilla options. Utilla builds require Utilla 1.5.0 or newer and only work in modded gamemodes.
 

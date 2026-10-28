@@ -16,8 +16,6 @@ Give your Gorilla Tag arms a fun, leg-like look! Legs Mod is a BepInEx mod for t
 
 You can check your own look in a mirror. To see the leg look on friends, they need a compatible build too. Multiplayer visibility is still being tested, so try it with a friend and compare what each of you sees.
 
-The Toggle build uses X on the left VR controller or F8 on keyboard by default. You can change the keyboard key in the BepInEx config. The Always On build keeps the leg look enabled.
-
-The Toggle builds use X on the left VR controller or F8 on keyboard by default. The Always On builds keep the leg look enabled. Utilla builds require Utilla 1.5.0 or newer and only move rigs in modded gamemodes. Install one DLL at a time. Version 1.0.2 keeps the same multiplayer markers as 1.0.0, so both versions can recognize each other's leg visuals.
+The Toggle builds use X on the left VR controller or F8 on keyboard by default. You can change the keyboard key in the BepInEx config. The Always On builds keep the leg look enabled. Utilla builds require Utilla 1.5.0 or newer and only move rigs in modded gamemodes. Install one DLL at a time. Version 1.0.3 keeps the same multiplayer markers as 1.0.0, so both versions can recognize each other's leg visuals.
 
 If anything looks off, let us know in the GitHub Issues tab. Have fun!

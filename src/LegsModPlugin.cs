@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BepInEx;
 using BepInEx.Configuration;
@@ -6,9 +7,12 @@ using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem.XR;
 using UnityEngine.XR;
 
-[BepInPlugin("purplemoonieee.leg.mod", "Legs Mod", "1.0.2")]
+[BepInPlugin("purplemoonieee.leg.mod", "Legs Mod", "1.0.3")]
 public sealed class ModSidedLegArmsPlugin : BaseUnityPlugin
 {
     private void Awake()
@@ -153,25 +157,30 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
 #if !LEGS_ALWAYS_ON
     private void Update()
     {
-        bool keyboardToggle = ToggleKey != null && ToggleKey.Value.IsDown();
+        bool keyboardToggle = ToggleKey != null && WasToggleKeyPressed(ToggleKey.Value);
         bool leftPrimaryPressed = false;
-        InputDevice leftHand = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+        UnityEngine.XR.InputDevice leftHand = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
         bool hasLeftPrimaryState = leftHand.isValid
-            && leftHand.TryGetFeatureValue(CommonUsages.primaryButton, out leftPrimaryPressed);
-        bool controllerToggle = hasLeftPrimaryState && leftPrimaryPressed && !leftPrimaryButtonWasPressed;
+            && leftHand.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primaryButton, out leftPrimaryPressed);
+        bool xrControllerToggle = hasLeftPrimaryState && leftPrimaryPressed && !leftPrimaryButtonWasPressed;
         leftPrimaryButtonWasPressed = hasLeftPrimaryState && leftPrimaryPressed;
-        bool joystickXToggle = Input.GetKeyDown(KeyCode.JoystickButton2);
+        XRController inputSystemLeftHand = XRController.leftHand;
+        ButtonControl inputSystemPrimary = inputSystemLeftHand != null
+            ? inputSystemLeftHand.TryGetChildControl<ButtonControl>("primaryButton") : null;
+        bool inputSystemControllerToggle = inputSystemPrimary != null
+            && inputSystemPrimary.wasPressedThisFrame;
+        bool controllerToggle = xrControllerToggle || inputSystemControllerToggle;
 
         if (!loggedToggleInputDiagnostic && Log != null && Time.unscaledTime >= 3f)
         {
-            string[] joystickNames = Input.GetJoystickNames();
             Log.LogInfo("Toggle input diagnostics: left XR device valid=" + leftHand.isValid
-                + ", name=" + leftHand.name + ", primary supported=" + hasLeftPrimaryState
-                + ", legacy joysticks=" + string.Join(", ", joystickNames) + ".");
+                + ", name=" + leftHand.name + ", XR primary supported=" + hasLeftPrimaryState
+                + ", Input System left controller=" + (inputSystemLeftHand != null)
+                + ", Input System primary control=" + (inputSystemPrimary != null) + ".");
             loggedToggleInputDiagnostic = true;
         }
 
-        if (!keyboardToggle && !controllerToggle && !joystickXToggle)
+        if (!keyboardToggle && !controllerToggle)
             return;
 
         legsEnabled = !legsEnabled;
@@ -186,6 +195,32 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
         if (Log != null)
             Log.LogInfo("Leg visuals " + (legsEnabled ? "enabled" : "disabled")
                 + ". Toggle with the left controller primary button or the configured keyboard key.");
+    }
+
+    private static bool WasToggleKeyPressed(KeyboardShortcut shortcut)
+    {
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard == null || shortcut.MainKey == KeyCode.None)
+            return false;
+
+        string keyName = shortcut.MainKey.ToString();
+        if (keyName.StartsWith("Alpha", StringComparison.Ordinal))
+            keyName = "Digit" + keyName.Substring("Alpha".Length);
+        else if (keyName.StartsWith("Keypad", StringComparison.Ordinal))
+            keyName = "Numpad" + keyName.Substring("Keypad".Length);
+        else if (keyName == "Return")
+            keyName = "Enter";
+        else if (keyName == "LeftControl")
+            keyName = "LeftCtrl";
+        else if (keyName == "RightControl")
+            keyName = "RightCtrl";
+
+        Key key;
+        if (!Enum.TryParse(keyName, true, out key))
+            return false;
+
+        KeyControl control = keyboard[key];
+        return control != null && control.wasPressedThisFrame;
     }
 #endif
 
