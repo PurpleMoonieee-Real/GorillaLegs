@@ -9,10 +9,8 @@ using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
-using UnityEngine.InputSystem.XR;
-using UnityEngine.XR;
 
-[BepInPlugin("purplemoonieee.leg.mod.utilla", "Legs Mod", "1.0.3")]
+[BepInPlugin("purplemoonieee.leg.mod.utilla", "Legs Mod", "1.0.4")]
 [BepInDependency("org.legoandmars.gorillatag.utilla", "1.5.0")]
 public sealed class ModSidedLegArmsPlugin : BaseUnityPlugin
 {
@@ -80,7 +78,10 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
     private bool presenceConfirmed;
     private bool legsEnabled = true;
 #if !LEGS_ALWAYS_ON
-    private bool leftPrimaryButtonWasPressed;
+    private ControllerInputPoller controllerPoller;
+    private float nextControllerPollerLookupTime;
+    private bool loggedControllerPollerFound;
+    private bool gamePrimaryButtonWasPressed;
 #endif
     private bool wasInModdedLobby;
 #if !LEGS_ALWAYS_ON
@@ -164,25 +165,26 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
     private void Update()
     {
         bool keyboardToggle = ToggleKey != null && WasToggleKeyPressed(ToggleKey.Value);
-        bool leftPrimaryPressed = false;
-        UnityEngine.XR.InputDevice leftHand = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
-        bool hasLeftPrimaryState = leftHand.isValid
-            && leftHand.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primaryButton, out leftPrimaryPressed);
-        bool xrControllerToggle = hasLeftPrimaryState && leftPrimaryPressed && !leftPrimaryButtonWasPressed;
-        leftPrimaryButtonWasPressed = hasLeftPrimaryState && leftPrimaryPressed;
-        XRController inputSystemLeftHand = XRController.leftHand;
-        ButtonControl inputSystemPrimary = inputSystemLeftHand != null
-            ? inputSystemLeftHand.TryGetChildControl<ButtonControl>("primaryButton") : null;
-        bool inputSystemControllerToggle = inputSystemPrimary != null
-            && inputSystemPrimary.wasPressedThisFrame;
-        bool controllerToggle = xrControllerToggle || inputSystemControllerToggle;
+        if (controllerPoller == null && Time.unscaledTime >= nextControllerPollerLookupTime)
+        {
+            nextControllerPollerLookupTime = Time.unscaledTime + 1f;
+            controllerPoller = ControllerInputPoller.instance;
+            if (controllerPoller == null)
+                controllerPoller = FindAnyObjectByType<ControllerInputPoller>();
+            if (controllerPoller != null && !loggedControllerPollerFound && Log != null)
+            {
+                Log.LogInfo("Found Gorilla Tag controller poller; left X toggle is ready.");
+                loggedControllerPollerFound = true;
+            }
+        }
+        bool gamePrimaryPressed = controllerPoller != null && controllerPoller.leftControllerPrimaryButton;
+        bool controllerToggle = gamePrimaryPressed && !gamePrimaryButtonWasPressed;
+        gamePrimaryButtonWasPressed = gamePrimaryPressed;
 
         if (!loggedToggleInputDiagnostic && Log != null && Time.unscaledTime >= 3f)
         {
-            Log.LogInfo("Toggle input diagnostics: left XR device valid=" + leftHand.isValid
-                + ", name=" + leftHand.name + ", XR primary supported=" + hasLeftPrimaryState
-                + ", Input System left controller=" + (inputSystemLeftHand != null)
-                + ", Input System primary control=" + (inputSystemPrimary != null) + ".");
+            Log.LogInfo("Toggle input diagnostics: Gorilla Tag controller poller=" + (controllerPoller != null)
+                + ", left X state=" + gamePrimaryPressed + ", Input System keyboard=" + (Keyboard.current != null) + ".");
             loggedToggleInputDiagnostic = true;
         }
 

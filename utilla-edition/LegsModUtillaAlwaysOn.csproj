@@ -5,10 +5,10 @@
     <RootNamespace>ModSidedLegArms</RootNamespace>
     <LangVersion>latest</LangVersion>
     <DefineConstants>$(DefineConstants);LEGS_ALWAYS_ON</DefineConstants>
-    <Version>1.0.3</Version>
-    <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <FileVersion>1.0.3.0</FileVersion>
-    <InformationalVersion>1.0.3</InformationalVersion>
+    <Version>1.0.4</Version>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
+    <FileVersion>1.0.4.0</FileVersion>
+    <InformationalVersion>1.0.4</InformationalVersion>
     <Company>PurpleMoonieee</Company>
     <Product>Legs Mod</Product>
     <GorillaTagDir Condition="'$(GorillaTagDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Gorilla Tag</GorillaTagDir>
