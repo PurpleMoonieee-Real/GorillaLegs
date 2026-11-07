@@ -1,6 +1,6 @@
-# Legs Mod v1.0.4
+# Legs Mod v1.0.5
 
-Updated for the latest Gorilla Tag PC version.
+Updated and rebuilt for the latest Gorilla Tag PC update.
 
 Includes Toggle and Always On builds, with standard and Utilla options. Utilla builds require Utilla 1.5.0 or newer and only work in modded gamemodes.
 

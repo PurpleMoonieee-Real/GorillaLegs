@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 
-[BepInPlugin("purplemoonieee.leg.mod.utilla", "Legs Mod", "1.0.4")]
+[BepInPlugin("purplemoonieee.leg.mod.utilla", "Legs Mod", "1.0.5")]
 [BepInDependency("org.legoandmars.gorillatag.utilla", "1.5.0")]
 public sealed class ModSidedLegArmsPlugin : BaseUnityPlugin
 {

@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 
-[BepInPlugin("purplemoonieee.leg.mod", "Legs Mod", "1.0.4")]
+[BepInPlugin("purplemoonieee.leg.mod", "Legs Mod", "1.0.5")]
 public sealed class ModSidedLegArmsPlugin : BaseUnityPlugin
 {
     private void Awake()
