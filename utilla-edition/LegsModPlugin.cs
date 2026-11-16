@@ -56,10 +56,6 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
     private const string PresenceValue = "1";
     private const string DisabledPresenceValue = "0";
     private const float LookupInterval = 1f;
-    private const float GroundProbeInterval = 0.05f;
-    private const float GroundProbeMoveThreshold = 0.15f;
-    private const float GroundClearance = 0.025f;
-    private static readonly RaycastHit[] GroundRaycastHits = new RaycastHit[24];
 
     public ConfigEntry<float> ShoulderDrop;
     public ConfigEntry<float> HandRaise;
@@ -497,8 +493,8 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
             return false;
         }
 
-        state.HandProxies.Add(new HandProxy(leftRoot, leftProxyRoot, leftMarker, leftMap, true));
-        state.HandProxies.Add(new HandProxy(rightRoot, rightProxyRoot, rightMarker, rightMap, false));
+        state.HandProxies.Add(new HandProxy(leftRoot, leftProxyRoot, leftMarker, leftMap));
+        state.HandProxies.Add(new HandProxy(rightRoot, rightProxyRoot, rightMarker, rightMap));
 
         var allMappings = new Dictionary<Transform, Transform>();
         foreach (KeyValuePair<Transform, Transform> pair in leftMap)
@@ -566,8 +562,6 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
         if (source == null)
             return null;
 
-        // This is a transform-only visual skeleton. It deliberately copies no
-        // colliders or rigidbodies, so rendered hands cannot affect locomotion.
         var cloneObject = new GameObject("__LegsModVisual_" + source.name);
         cloneObject.hideFlags = HideFlags.HideInHierarchy;
         Transform clone = cloneObject.transform;
@@ -601,81 +595,8 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
             {
                 Vector3 markerOffset = proxy.SourceRoot.TransformVector(proxy.RootToMarkerLocal);
                 proxy.ProxyRoot.position = proxy.SourceRoot.position + markerOffset * 0.5f + offset;
-                KeepProxyHandAboveGround(rig, proxy);
             }
         }
-    }
-
-    private void KeepProxyHandAboveGround(VRRig rig, HandProxy proxy)
-    {
-        if (rig == null || proxy.Marker == null || proxy.ProxyMarker == null)
-            return;
-
-        Vector3 visualCenter = proxy.ProxyMarker.position;
-        bool hasLocalGroundContact = false;
-        if (rig == VRRig.LocalRig)
-        {
-            GorillaLocomotion.GTPlayer localPlayer = GorillaLocomotion.GTPlayer.Instance;
-            if (localPlayer != null)
-            {
-                var hand = proxy.IsLeft ? localPlayer.LeftHand : localPlayer.RightHand;
-                if (hand.isColliding && hand.hitInfo.collider != null
-                    && hand.hitInfo.normal.y >= 0.35f)
-                {
-                    proxy.GroundPoint = hand.hitInfo.point;
-                    proxy.GroundNormal = hand.hitInfo.normal;
-                    proxy.HasGroundSample = true;
-                    proxy.LastGroundProbePosition = visualCenter;
-                    proxy.NextGroundProbeTime = Time.unscaledTime + GroundProbeInterval;
-                    hasLocalGroundContact = true;
-                }
-            }
-        }
-
-        bool shouldProbe = !hasLocalGroundContact
-            && (Time.unscaledTime >= proxy.NextGroundProbeTime
-            || (visualCenter - proxy.LastGroundProbePosition).sqrMagnitude
-                >= GroundProbeMoveThreshold * GroundProbeMoveThreshold);
-        if (shouldProbe)
-        {
-            proxy.NextGroundProbeTime = Time.unscaledTime + GroundProbeInterval;
-            proxy.LastGroundProbePosition = visualCenter;
-            proxy.HasGroundSample = false;
-
-            float originY = Mathf.Max(visualCenter.y, proxy.Marker.bounds.center.y) + 0.35f;
-            Vector3 origin = new Vector3(visualCenter.x, originY, visualCenter.z);
-            float distance = Mathf.Max(2f, originY - visualCenter.y + 0.75f);
-            int hitCount = Physics.RaycastNonAlloc(origin, Vector3.down, GroundRaycastHits,
-                distance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-            float nearestDistance = float.PositiveInfinity;
-
-            for (int i = 0; i < hitCount; i++)
-            {
-                Collider collider = GroundRaycastHits[i].collider;
-                if (collider == null || !collider.enabled || !collider.gameObject.activeInHierarchy
-                    || collider.transform.IsChildOf(rig.transform)
-                    || collider.GetComponentInParent<RigContainer>() != null
-                    || GroundRaycastHits[i].normal.y < 0.35f
-                    || GroundRaycastHits[i].distance >= nearestDistance)
-                    continue;
-
-                nearestDistance = GroundRaycastHits[i].distance;
-                proxy.GroundPoint = GroundRaycastHits[i].point;
-                proxy.GroundNormal = GroundRaycastHits[i].normal;
-                proxy.HasGroundSample = true;
-            }
-        }
-
-        if (!proxy.HasGroundSample)
-            return;
-
-        Vector3 normal = proxy.GroundNormal;
-        Vector3 extents = proxy.Marker.bounds.extents;
-        float markerRadius = Mathf.Max(extents.x, Mathf.Max(extents.y, extents.z));
-        float signedDistance = Vector3.Dot(visualCenter - proxy.GroundPoint, normal);
-        float minimumDistance = markerRadius + GroundClearance;
-        if (signedDistance < minimumDistance)
-            proxy.ProxyRoot.position += normal * (minimumDistance - signedDistance);
     }
 
     private void RefreshComputerKeyColliders()
@@ -867,37 +788,26 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
     {
         public readonly Transform SourceRoot;
         public readonly Transform ProxyRoot;
-        public readonly Transform ProxyMarker;
-        public readonly SphereCollider Marker;
         public readonly Vector3 RootToMarkerLocal;
-        public readonly bool IsLeft;
+        private readonly SphereCollider marker;
         private readonly Dictionary<Transform, Transform> mapping;
-        public float NextGroundProbeTime;
-        public Vector3 LastGroundProbePosition;
-        public Vector3 GroundPoint;
-        public Vector3 GroundNormal;
-        public bool HasGroundSample;
 
         public HandProxy(Transform sourceRoot, Transform proxyRoot, SphereCollider marker,
-            Dictionary<Transform, Transform> mapping, bool isLeft)
+            Dictionary<Transform, Transform> mapping)
         {
             SourceRoot = sourceRoot;
             ProxyRoot = proxyRoot;
-            Marker = marker;
-            Transform proxyMarker;
-            ProxyMarker = marker != null && mapping.TryGetValue(marker.transform, out proxyMarker)
-                ? proxyMarker : null;
-            IsLeft = isLeft;
+            this.marker = marker;
             RootToMarkerLocal = sourceRoot.InverseTransformVector(marker.bounds.center - sourceRoot.position);
             this.mapping = mapping;
         }
 
         public bool IsNearComputerKey(List<Collider> keyColliders, float range)
         {
-            if (Marker == null || keyColliders == null || keyColliders.Count == 0)
+            if (marker == null || keyColliders == null || keyColliders.Count == 0)
                 return false;
 
-            Vector3 markerCenter = Marker.bounds.center;
+            Vector3 markerCenter = marker.bounds.center;
             float rangeSquared = range * range;
             for (int i = 0; i < keyColliders.Count; i++)
             {
@@ -914,10 +824,10 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
 
         public bool IsNearComputerTerminal(List<Transform> terminals, float range)
         {
-            if (Marker == null || terminals == null || terminals.Count == 0)
+            if (marker == null || terminals == null || terminals.Count == 0)
                 return false;
 
-            Vector3 markerCenter = Marker.bounds.center;
+            Vector3 markerCenter = marker.bounds.center;
             float rangeSquared = range * range;
             for (int i = 0; i < terminals.Count; i++)
             {

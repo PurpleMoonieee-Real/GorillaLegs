@@ -1,7 +1,7 @@
-# Legs Mod v1.0.6
+# Legs Mod v1.0.7
 
-Updated and rebuilt for the latest Gorilla Tag PC update. Visual hands now use local hand-contact data to stay aligned near the floor, with a floor check as backup.
+Updated for the latest Gorilla Tag PC assembly. Removed the extra visual hand lift so the hands keep their expected position.
 
-Includes Toggle and Always On builds, with standard and Utilla options. The mod does not alter gameplay colliders. Utilla builds require Utilla 1.5.0 or newer and only work in modded gamemodes.
+Includes Toggle and Always On builds, with standard and Utilla options. Utilla builds require Utilla 1.5.0 or newer and only work in modded gamemodes.
 
 The multiplayer markers remain compatible with version 1.0.0.
