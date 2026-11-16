@@ -21,3 +21,8 @@ You can check your own look in a mirror. To see the leg look on friends, they ne
 The Toggle builds use X on the left VR controller or F8 on keyboard by default. You can change the keyboard key in the BepInEx config. The Always On builds keep the leg look enabled. Version 1.0.6 keeps the same multiplayer markers as 1.0.0, so both versions can recognize each other's leg visuals.
 
 If anything looks off, let us know in the GitHub Issues tab. Have fun!
+
+## Transparency
+
+i am going to be very clear about this, this was mostly coded with ai, 
+its your choice if you choose to use this or not.
