@@ -24,5 +24,5 @@ If anything looks off, let us know in the GitHub Issues tab. Have fun!
 
 ## Transparency
 
-i am going to be very clear about this, this was mostly coded with ai, 
-its your choice if you choose to use this or not.
+I want to be upfront: AI helped write most of this mod.
+Whether you use it is completely up to you.
