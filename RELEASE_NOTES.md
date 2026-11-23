@@ -1,6 +1,6 @@
 # Legs Mod v1.0.9
 
-Fixed the hand transforms so the hands stay centered in their leg-like position.
+Major fix: the long-standing hand-transform issue from the mod's first version is fixed. The hands now stay centered in their leg-like position.
 
 Includes Toggle and Always On builds, with standard and Utilla options. Utilla builds require Utilla 1.5.0 or newer and only work in modded gamemodes.
 
