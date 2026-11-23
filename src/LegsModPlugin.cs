@@ -12,7 +12,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 
-[BepInPlugin("purplemoonieee.leg.mod", "Legs Mod", "1.0.8")]
+[BepInPlugin("purplemoonieee.leg.mod", "Legs Mod", "1.0.9")]
 public sealed class ModSidedLegArmsPlugin : BaseUnityPlugin
 {
     private static ModSidedLegArmsBehaviour activeBehaviour;
@@ -556,8 +556,8 @@ public sealed class ModSidedLegArmsBehaviour : MonoBehaviourPunCallbacks
             state.RightShoulderOriginal.y - appliedDrop, state.RightShoulderOriginal.z);
 
         ApplyVisualHandOffset(rig, state, drop,
-            HandRaise != null ? Mathf.Clamp(HandRaise.Value, -0.25f, 0.25f) : 0.0290f,
-            HandTowardTorso != null ? Mathf.Clamp(HandTowardTorso.Value, 0f, 0.2f) : 0.08f,
+            HandRaise != null ? Mathf.Clamp(HandRaise.Value, 0.002f, 0.002f) : 0.0290f,
+            HandTowardTorso != null ? Mathf.Clamp(HandTowardTorso.Value, 0.0465f, 0.0465f) : 0.08f,
             atInteractionStation);
         for (int i = 0; i < state.BodyDockBindings.Count; i++)
             state.BodyDockBindings[i].Apply();
