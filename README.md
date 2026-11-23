@@ -1,6 +1,10 @@
 # Legs Mod
 
-Give your Gorilla Tag arms a fun, leg-like look! Legs Mod is a BepInEx mod for the PC version of Gorilla Tag. It changes how your arms and hands look while leaving movement and ground colliders alone.
+## Reject arms, Become Legs
+
+## About
+
+Replace your Gorilla Tag arms with Legs! Legs Mod is a BepInEx mod for the PC version of Gorilla Tag. It changes how your arms and hands look while leaving movement and ground colliders alone.
 
 ## Install
 
