@@ -26,6 +26,29 @@ The Toggle builds use X on the left VR controller or F8 on keyboard by default. 
 
 If anything looks off, let us know in the GitHub Issues tab. Have fun!
 
+##License & Attribution
+
+GorillaLegs is licensed under the GNU General Public License v3.0 (GPL-3.0).
+
+Copyright © 2026 PurpleMoonieee-Real. All rights reserved.
+
+You are free to:
+
+- Use GorillaLegs for personal or commercial purposes.
+- Modify and adapt the source code.
+- Redistribute original or modified versions.
+
+Requirements:
+
+- Retain all existing copyright notices.
+- Include a copy of the GPL-3.0 license when redistributing.
+- Distribute modified versions under GPL-3.0.
+- Clearly indicate any modifications made to the original source.
+
+If you use or modify GorillaLegs, please give appropriate credit to the original author, PurpleMoonieee.
+
+See "LICENSE" (LICENSE) for the full license terms.
+
 ## Transparency
 
 I want to be upfront: AI helped write most of this mod.
