@@ -26,7 +26,7 @@ The Toggle builds use X on the left VR controller or F8 on keyboard by default. 
 
 If anything looks off, let us know in the GitHub Issues tab. Have fun!
 
-##License & Attribution
+## License & Attribution
 
 GorillaLegs is licensed under the GNU General Public License v3.0 (GPL-3.0).
 
