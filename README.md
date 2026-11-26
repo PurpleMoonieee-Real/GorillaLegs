@@ -31,8 +31,6 @@ If anything looks off, let us know in the GitHub Issues tab. Have fun!
 
 GorillaLegs is licensed under the GNU General Public License v3.0 (GPL-3.0).
 
-Copyright © 2026 PurpleMoonieee-Real. All rights reserved.
-
 You are free to:
 
 - Use GorillaLegs for personal or commercial purposes.
