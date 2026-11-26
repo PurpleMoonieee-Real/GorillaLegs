@@ -47,7 +47,7 @@ Requirements:
 
 If you use or modify GorillaLegs, please give appropriate credit to the original author, PurpleMoonieee.
 
-See [LICENSE](https://github.com/PurpleMoonieee-Real/GorillaLegs/blob/main/LICENSE): for the full license terms.
+See [LICENSE](https://github.com/PurpleMoonieee-Real/GorillaLegs/blob/main/LICENSE) for the full license terms.
 
 ## Transparency
 
