@@ -13,6 +13,7 @@ Replace your Gorilla Tag arms with Legs! Legs Mod is a BepInEx mod for the PC ve
    - `LegsModAlwaysOn.dll` for the standard always-on build.
    - `LegsModUtilla.dll` for the Utilla toggle build.
    - `LegsModUtillaAlwaysOn.dll` for the Utilla always-on build.
+   
    Choose only one DLL. Do not install multiple builds at the same time.
    Both Utilla builds require Utilla 1.5.0 or newer and only work in modded gamemodes.
 2. Drop it into `Gorilla Tag/BepInEx/plugins/`.
